@@ -10,12 +10,14 @@ export async function onOptionsError(ctx: AnyContext): Promise<Message | Webhook
 
     if (command.options && command.options.length > 0) {
         for (const opt of command.options) {
-            let optionStr = opt.required? `<-${opt.name}>` : `[-${opt.name}]`;
+            let optionStr = opt.required ? `<-${opt.name}>` : `[-${opt.name}]`;
 
-            const option: any = opt;
-            if (option.choices && option.choices.length > 0) {
-                const choices = option.choices.map((c: any) => c.name).join(", ");
-                optionStr += ` <${choices}>`;
+            const option = opt;
+            if ("choices" in option) {
+                if (option.choices && option.choices.length > 0) {
+                    const choices = option.choices.map((c) => c.name).join(", ");
+                    optionStr += ` <${choices}>`;
+                }
             }
 
             usage += ` ${optionStr}`;
@@ -30,5 +32,5 @@ export async function onOptionsError(ctx: AnyContext): Promise<Message | Webhook
         )
         .setTimestamp();
 
-    return ctx.editOrReply({ flags: MessageFlags.Ephemeral, embeds: [ embed ] });
+    return ctx.editOrReply({ flags: MessageFlags.Ephemeral, embeds: [embed] });
 }

@@ -37,16 +37,16 @@ export class MessageInstance {
     }
 }
 
-export class MessageInstanceCallback extends MessageInstance {
-    private cb;
+export class MessageInstanceCallback<TParams extends unknown[] = []> extends MessageInstance {
+    private cb: (...params: TParams) => Promise<MessageBase>;
 
-    constructor(callback: (...params: any) => Promise<MessageBase>) {
+    constructor(callback: (...params: TParams) => Promise<MessageBase>) {
         super({});
         this.cb = callback;
     }
 
-    public async resolve(...params: any): Promise<InteractionCreateBodyRequest | MessageCreateBodyRequest> {
-        const newMessage = await this.cb(params);
+    public async resolve(...params: TParams): Promise<InteractionCreateBodyRequest | MessageCreateBodyRequest> {
+        const newMessage = await this.cb(...params);
         this.message = newMessage;
 
         return this.message as InteractionCreateBodyRequest | MessageCreateBodyRequest;

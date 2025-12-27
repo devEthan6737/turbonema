@@ -1,24 +1,24 @@
 import { ActionRow, Button, Embed, CommandContext } from 'seyfert';
 import { CollectorInteraction, CreateComponentCollectorResult } from 'seyfert/lib/components/handler';
 import { MessageInstanceCallback } from './MessageInstance';
-import { MessageCreateBodyRequest } from 'seyfert/lib/common';
+import { ComponentInteractionMessageUpdate, MessageCreateBodyRequest } from 'seyfert/lib/common';
 
-export interface PaginatorOptions {
-    data: any[];
+export interface PaginatorOptions<T = any> {
+    data: T[];
     itemsPerPage: number;
-    formatter: (items: any[], currentPage: number) => string;
+    formatter: (items: T[], currentPage: number) => string;
     embedGenerator: (currentPage: number, totalPages: number, totalItems: number) => Embed;
     MessageInstancerCallback?: Function,
-    middleComponent: Button | ((currentPage: number, totalPages: number, data: any[]) => Button);
-    simulation?: Paginator;
+    middleComponent: Button | ((currentPage: number, totalPages: number, data: T[]) => Button);
+    simulation?: Paginator<T>;
 }
 
-export class Paginator {
+export class Paginator<T = any> {
     private readonly ctx: CommandContext | CollectorInteraction;
-    private readonly options: PaginatorOptions;
-    private parent: Paginator | undefined;
-    private child: Paginator | undefined;
-    public collector: CreateComponentCollectorResult | any;
+    private readonly options: PaginatorOptions<T>;
+    private parent: Paginator<T> | undefined;
+    private child: Paginator<T> | undefined;
+    public collector!: CreateComponentCollectorResult;
     public readonly MessageInstancer: MessageInstanceCallback = new MessageInstanceCallback(async () => {
         const message = {
             embeds: [ this.getEmbed() ],
@@ -27,16 +27,15 @@ export class Paginator {
             flags: 0
         };
 
-        if (this.parent) message.components?.push(new ActionRow().addComponents(new Button().setCustomId('back').setLabel('◀ Volver').setStyle(2)) as any);
+        if (this.parent) message.components?.push(new ActionRow().addComponents(new Button().setCustomId('back').setLabel('◀ Volver').setStyle(2)));
 
         return message;
     });
     public currentPage: number = 0;
     public readonly totalPages: number;
-    public readonly Items: object[];
-    public data: any;
+    public readonly Items: T[];
 
-    constructor(ctx: CommandContext | CollectorInteraction, options: PaginatorOptions) {
+    constructor(ctx: CommandContext | CollectorInteraction, options: PaginatorOptions<T>) {
         this.ctx = ctx;
         this.options = options;
         this.totalPages = Math.ceil(this.options.data.length / this.options.itemsPerPage);
@@ -46,8 +45,8 @@ export class Paginator {
 
     public async start() {
         if (this.options.simulation) {
-            this.collector = this.parent?.collector;
-            (this.ctx as any).editResponse(await this.MessageInstancer.resolve() as any)
+            this.collector = this.parent!.collector!;
+            await this.ctx.editResponse(await this.MessageInstancer.resolve());
         } else {
             if ('update' in this.ctx) {
                 this.collector = (
@@ -56,7 +55,7 @@ export class Paginator {
                         await this.MessageInstancer.resolve()
                     )
                 ).createComponentCollector({
-                    filter: (i: any) => i.user.id === this.ctx.member?.id,
+                    filter: (i) => i.user.id === this.ctx.member?.id,
                     timeout: 180000
                 })
             } else {
@@ -66,7 +65,7 @@ export class Paginator {
                         true,
                     )
                 ).createComponentCollector({
-                    filter: (i: any) => i.user.id === this.ctx.member?.id,
+                    filter: (i) => i.user.id === this.ctx.member?.id,
                     timeout: 180000,
                 });
             }
@@ -150,8 +149,8 @@ export class Paginator {
         });
 
         if (this.parent) this.run('back', async (interaction: CollectorInteraction) => {
-            (this.parent as Paginator).child = undefined;
-            this.updateMessage(interaction, await (this.parent as Paginator).MessageInstancer.resolve());
+            (this.parent as Paginator<T>).child = undefined;
+            this.updateMessage(interaction, await (this.parent as Paginator<T>).MessageInstancer.resolve());
         });
     }
 
@@ -160,7 +159,7 @@ export class Paginator {
     }
 
     public async updateMessage(interaction: CollectorInteraction, message: MessageCreateBodyRequest) {
-        await interaction.update(message as any);
+        await interaction.update(message as ComponentInteractionMessageUpdate);
     }
 
     public run(customId: string, callback: (interaction: CollectorInteraction) => Promise<void>): void {
@@ -169,7 +168,7 @@ export class Paginator {
         });
     }
 
-    public setChild(child: Paginator) {
+    public setChild(child: Paginator<T>) {
         this.child = child;
     }
 }

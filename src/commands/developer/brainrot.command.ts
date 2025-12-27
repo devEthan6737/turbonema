@@ -1,5 +1,5 @@
-import { Declare, Options, Command, type CommandContext, IgnoreCommand, createStringOption, Middlewares, AttachmentBuilder, Embed, Button } from 'seyfert';
-import { Brainrot, raritiesArray } from '../../systems/Database/interfaces';
+import { Declare, Options, Command, type CommandContext, IgnoreCommand, createStringOption, Middlewares, AttachmentBuilder, Embed, Button, MessageStructure } from 'seyfert';
+import { Brainrot, rarities, raritiesArray } from '../../systems/Database/interfaces';
 import path from 'node:path';
 import fs from 'node:fs';
 import Database from '../../systems/Database/database';
@@ -8,6 +8,10 @@ import { ColorResolvable } from 'seyfert/lib/common';
 import { createBrainrotCard } from '../../systems/canvas';
 import { Readable } from 'node:stream';
 import { ReadableStream } from 'node:stream/web';
+
+interface CreationBrainrot extends Omit<Brainrot, "base64Image"> {
+    base64Image: Buffer;
+}
 
 const options = {
     action: createStringOption({
@@ -40,7 +44,7 @@ export default class BrainrotCommand extends Command {
     async run(ctx: CommandContext<typeof options>) {
         if (ctx.options.action === 'add') {
 
-            const brainrot: any = {}
+            const brainrot: CreationBrainrot = {} as CreationBrainrot;
 
             let step = 0; // 0 de 8
             const message = await ctx.write({
@@ -50,7 +54,7 @@ export default class BrainrotCommand extends Command {
             ctx.client.collectors.create({
                 event: 'MESSAGE_CREATE',
                 filter: (arg) => arg.author.id === ctx.author.id,
-                run: async (arg, stop): Promise<any> => {
+                run: async (arg, stop): Promise<MessageStructure | undefined> => {
                     if (arg.content === 'parar' || arg.content === 'stop') {
                         const fileName = brainrot.audioFileName ?? 'nada.mp3';
                         const folderPath = path.join(process.cwd(), 'assets', 'audios');
@@ -58,9 +62,10 @@ export default class BrainrotCommand extends Command {
 
                         if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
 
-                        arg.write({
+                        await arg.write({
                             content: 'Creación detenida.'
                         });
+
                         stop();
                     } else if (arg.content === 'guardar' || arg.content === 'save') {
                         if (step != 8) return arg.write({ content: 'Debes completar todos los pasos para hacer el guardado.' });
@@ -69,7 +74,7 @@ export default class BrainrotCommand extends Command {
                             id: brainrot.id,
                             name: brainrot.name,
                             message: brainrot.message,
-                            base64Image: Buffer.from(brainrot.base64Image, 'binary').toString('base64'),
+                            base64Image: Buffer.from(brainrot.base64Image).toString('base64'),
                             audioFileName: brainrot.audioFileName,
                             rarity: brainrot.rarity,
                             buyPrice: brainrot.buyPrice,
@@ -81,7 +86,7 @@ export default class BrainrotCommand extends Command {
                         const brainrots = Database.getInstance('brainrots');
                         brainrots.set(newBrainrotInterface.id, newBrainrotInterface);
 
-                        arg.write({
+                        await arg.write({
                             content: `### Nuevo brainrot creado\n**BrainrotId:** ${brainrot.id}\n**Nombre:** ${brainrot.name}\n**Mensaje:** ${brainrot.message}\n**Nivel requerido:** ${brainrot.levelRequeried}\n**Rareza:** ${brainrot.rarity}\n**Precio de compra:** ${brainrot.buyPrice}\n**Bonificación de XP:** ${brainrot.xpReward}\n**Monedas al desechar:** ${brainrot.scrapValue}\n**Audio:** ${brainrot.audioFileName}`,
                             files: [ new AttachmentBuilder().setName('card.png').setFile('buffer', brainrot.base64Image) ]
                         });
@@ -92,33 +97,33 @@ export default class BrainrotCommand extends Command {
                         brainrot.name = arg.content;
                         step++;
 
-                        message.edit({
+                        await message.edit({
                             content: `**BrainrotId:** ${brainrot.id}\n**Nombre:** ${brainrot.name}`
                         });
-                        arg.write({ content: 'Escribe el mensaje que el bot dirá cuando se capture el Brainrot.' });
+                        await arg.write({ content: 'Escribe el mensaje que el bot dirá cuando se capture el Brainrot.' });
                     } else if (step == 1) {
                         brainrot.message = arg.content;
                         step++;
 
-                        message.edit({
+                        await message.edit({
                             content: `**BrainrotId:** ${brainrot.id}\n**Nombre:** ${brainrot.name}\n**Mensaje:** ${brainrot.message}`
                         });
-                        arg.write({ content: 'Escribe el nivel requerido para que aparezca el Brainrot.' });
+                        await arg.write({ content: 'Escribe el nivel requerido para que aparezca el Brainrot.' });
                     } else if (step == 2) {
                         brainrot.levelRequeried = parseInt(arg.content);
                         step++;
 
-                        message.edit({
+                        await message.edit({
                             content: `**BrainrotId:** ${brainrot.id}\n**Nombre:** ${brainrot.name}\n**Mensaje:** ${brainrot.message}\n**Nivel requerido:** ${brainrot.levelRequeried}`
                         });
-                        arg.write({ content: `Escribe la rareza del Brainrot.\nRarezas disponibles: \`${raritiesArray.join(' | ')}\`` });
+                        await arg.write({ content: `Escribe la rareza del Brainrot.\nRarezas disponibles: \`${raritiesArray.join(' | ')}\`` });
                     } else if (step == 3) {
-                        if (!raritiesArray.includes(arg.content as any)) return arg.write({ content: `No existe esa rareza.\nRarezas disponibles: \`${raritiesArray.join(' | ')}\`` });
+                        if (!raritiesArray.includes(arg.content as rarities)) return arg.write({ content: `No existe esa rareza.\nRarezas disponibles: \`${raritiesArray.join(' | ')}\`` });
 
-                        brainrot.rarity = arg.content;
+                        brainrot.rarity = arg.content as rarities;
                         step++;
 
-                        message.edit({
+                        await message.edit({
                             content: `**BrainrotId:** ${brainrot.id}\n**Nombre:** ${brainrot.name}\n**Mensaje:** ${brainrot.message}\n**Nivel requerido:** ${brainrot.levelRequeried}\n**Rareza:** ${brainrot.rarity}`
                         });
                         arg.write({ content: 'Adjunta la imagen del Brainrot.' });
@@ -129,7 +134,7 @@ export default class BrainrotCommand extends Command {
                         const response = await fetch(attachment.url);
                         const arrayBuffer = await response.arrayBuffer();
                         
-                        brainrot.base64Image = Buffer.from(arrayBuffer).toString('base64');
+                        brainrot.base64Image = Buffer.from(arrayBuffer);
 
                         const cardBuffer = await createBrainrotCard(
                             brainrot.name,
@@ -142,39 +147,39 @@ export default class BrainrotCommand extends Command {
                         step++;
 
 
-                        message.edit({
+                        await message.edit({
                             content: `**BrainrotId:** ${brainrot.id}\n**Nombre:** ${brainrot.name}\n**Mensaje:** ${brainrot.message}\n**Nivel requerido:** ${brainrot.levelRequeried}\n**Rareza:** ${brainrot.rarity}\n**Imagen:** Buffer`,
                             files: [ new AttachmentBuilder().setName('card.png').setFile('buffer', brainrot.base64Image) ]
                         });
 
-                        arg.write({ content: 'Escribe el precio de compra del Brainrot.' });
+                        await arg.write({ content: 'Escribe el precio de compra del Brainrot.' });
                     } else if (step == 5) {
                         brainrot.buyPrice = parseInt(arg.content);
                         step++;
 
-                        message.edit({
+                        await message.edit({
                             content: `**BrainrotId:** ${brainrot.id}\n**Nombre:** ${brainrot.name}\n**Mensaje:** ${brainrot.message}\n**Nivel requerido:** ${brainrot.levelRequeried}\n**Rareza:** ${brainrot.rarity}\n**Precio de compra:** ${brainrot.buyPrice}`,
                             files: [ new AttachmentBuilder().setName('card.png').setFile('buffer', brainrot.base64Image) ]
                         });
-                        arg.write({ content: 'Escribe la bonificación de XP.' });
+                        await arg.write({ content: 'Escribe la bonificación de XP.' });
                     } else if (step == 6) {
                         brainrot.xpReward = parseInt(arg.content);
                         step++;
 
-                        message.edit({
+                        await message.edit({
                             content: `**BrainrotId:** ${brainrot.id}\n**Nombre:** ${brainrot.name}\n**Mensaje:** ${brainrot.message}\n**Nivel requerido:** ${brainrot.levelRequeried}\n**Rareza:** ${brainrot.rarity}\n**Precio de compra:** ${brainrot.buyPrice}\n**Bonificación de XP:** ${brainrot.xpReward}`,
                             files: [ new AttachmentBuilder().setName('card.png').setFile('buffer', brainrot.base64Image) ]
                         });
-                        arg.write({ content: 'Escribe el precio de bonificación al desechar la carta.' });
+                        await arg.write({ content: 'Escribe el precio de bonificación al desechar la carta.' });
                     } else if (step == 7) {
                         brainrot.scrapValue = parseInt(arg.content);
                         step++;
 
-                        message.edit({
+                        await message.edit({
                             content: `**BrainrotId:** ${brainrot.id}\n**Nombre:** ${brainrot.name}\n**Mensaje:** ${brainrot.message}\n**Nivel requerido:** ${brainrot.levelRequeried}\n**Rareza:** ${brainrot.rarity}\n**Precio de compra:** ${brainrot.buyPrice}\n**Bonificación de XP:** ${brainrot.xpReward}\n**Monedas al desechar:** ${brainrot.scrapValue}`,
                             files: [ new AttachmentBuilder().setName('card.png').setFile('buffer', brainrot.base64Image) ]
                         });
-                        arg.write({ content: 'Adjunta el fichero del audio que emitirá el brainrot.' });
+                        await arg.write({ content: 'Adjunta el fichero del audio que emitirá el brainrot.' });
                     } else if (step == 8) {
                         const attachment = arg.attachments[0];
                         if (!attachment || !attachment.contentType?.startsWith('audio/')) return arg.write({ content: 'Adjunta archivo de audio.' });
@@ -200,16 +205,18 @@ export default class BrainrotCommand extends Command {
 
                             brainrot.audioFileName = fileName;
 
-                            message.edit({
+                            await message.edit({
                                 content: `**BrainrotId:** ${brainrot.id}\n**Nombre:** ${brainrot.name}\n**Mensaje:** ${brainrot.message}\n**Nivel requerido:** ${brainrot.levelRequeried}\n**Rareza:** ${brainrot.rarity}\n**Precio de compra:** ${brainrot.buyPrice}\n**Bonificación de XP:** ${brainrot.xpReward}\n**Monedas al desechar:** ${brainrot.scrapValue}\n**Audio:** ${fileName}`,
                                 files: [ new AttachmentBuilder().setName('card.png').setFile('buffer', brainrot.base64Image) ]
                             });
-                            arg.write({ content: 'Se han terminado los pasos. Para guardar el brainrot escriba "guardar" o "save".' });
+                            await arg.write({ content: 'Se han terminado los pasos. Para guardar el brainrot escriba "guardar" o "save".' });
                         } catch (error) {
                             console.error(error);
-                            arg.write({ content: 'Error al descargar el audio. Inténtalo de nuevo.' });
+                            await arg.write({ content: 'Error al descargar el audio. Inténtalo de nuevo.' });
                         }
                     }
+
+                    return;
                 }
             });
         } else if (ctx.options.action === 'list') {

@@ -1,13 +1,13 @@
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import { rarities, RarityMap } from "./Database/interfaces";
 
-export async function createBrainrotCard(name: string, message: string, base64Image: string, rarity: string, level: number) {
+export async function createBrainrotCard(name: string, message: string, base64Image: Buffer, rarity: rarities, level: number) {
     const width = 450;
     const height = 630;
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
 
-    const rarityColors: Record<string, string> = {
+    const rarityColors: Record<rarities, string> = {
         'very_common': '#7f8c8d',
         'common': '#95a5a6',
         'uncommon': '#2ecc71',
@@ -24,7 +24,7 @@ export async function createBrainrotCard(name: string, message: string, base64Im
 
     ctx.fillStyle = '#121212';
     ctx.fillRect(0, 0, width, height);
-    const img = await loadImage(`data:image/png;base64,${base64Image}`);
+    const img = await loadImage(base64Image);
     ctx.drawImage(img, 0, 0, width, 400);
 
     ctx.font = 'bold 30px sans-serif'; 

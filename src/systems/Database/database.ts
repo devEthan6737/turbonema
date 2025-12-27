@@ -58,7 +58,10 @@ class Database {
         const query = `
             SELECT 1 FROM ${this.tableName} WHERE key = $1;
         `;
-        const result: any = await pool.query(query, [key]);
+        const result = await pool.query(query, [key]);
+
+        if (!result.rowCount) return false;
+
         return result.rowCount > 0;
     }
 
