@@ -1,13 +1,13 @@
 import { Declare, Command, type CommandContext, IgnoreCommand, Container, TextDisplay, Separator, Section, Button, Embed } from 'seyfert';
-import Database from '../../systems/Database/database';
-import { Brainrot, Profile, rarities, RarityMap, rarityOrder } from '../../systems/Database/interfaces';
+import Database from '../../systems/db/database';
+import { Brainrot, Profile, rarities, RarityMap, rarityOrder } from '../../systems/db/interfaces';
 import { createNumericalProgressBar, formatNumberWithDots } from '../../systems/utils';
 import { getFormattedLevel, getLevelName, getNextLevelXP } from '../../systems/levels';
 import { ButtonStyle, MessageFlags } from 'seyfert/lib/types';
 import { ColorResolvable } from 'seyfert/lib/common';
-import { createProfile } from '../../systems/Database/createProfile';
+import { createProfile } from '../../systems/db/createProfile';
 import { CollectorInteraction } from 'seyfert/lib/components/handler';
-import { Paginator } from '../../systems/messages_utils/Paginator';
+import { Paginator } from '../../systems/messages/Paginator';
 
 @Declare({
     name: "profile",

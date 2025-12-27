@@ -1,11 +1,11 @@
 import { Declare, Command, type CommandContext, IgnoreCommand, Embed, Button, ActionRow, AttachmentBuilder } from 'seyfert';
-import Database from '../../systems/Database/database';
-import { Brainrot, Profile, rarities, RarityMap } from '../../systems/Database/interfaces';
+import Database from '../../systems/db/database';
+import { Brainrot, Profile, rarities, RarityMap } from '../../systems/db/interfaces';
 import { ColorResolvable } from 'seyfert/lib/common';
 import { ButtonStyle } from 'seyfert/lib/types';
-import { createProfile } from '../../systems/Database/createProfile';
+import { createProfile } from '../../systems/db/createProfile';
 import { CollectorInteraction } from 'seyfert/lib/components/handler';
-import { playLocalAudio } from '../../systems/playLocalAudio';
+import { playLocalAudio } from '../../systems/playAudio';
 
 type ContextWriteOptions = Parameters<CommandContext["write"]>[0];
 type CollectorWriteOptions = Parameters<CollectorInteraction["update"]>[0];

@@ -1,5 +1,5 @@
 import { Declare, Command, type CommandContext, IgnoreCommand } from 'seyfert';
-import Database from '../../systems/Database/database';
+import Database from '../../systems/db/database';
 
 @Declare({
     name: "ping",

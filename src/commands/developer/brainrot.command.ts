@@ -1,9 +1,9 @@
 import { Declare, Options, Command, type CommandContext, IgnoreCommand, createStringOption, Middlewares, AttachmentBuilder, Embed, Button, MessageStructure } from 'seyfert';
-import { Brainrot, rarities, raritiesArray } from '../../systems/Database/interfaces';
+import { Brainrot, rarities, raritiesArray } from '../../systems/db/interfaces';
 import path from 'node:path';
 import fs from 'node:fs';
-import Database from '../../systems/Database/database';
-import { Paginator } from '../..//systems/messages_utils/Paginator';
+import Database from '../../systems/db/database';
+import { Paginator } from '../../systems/messages/Paginator';
 import { ColorResolvable } from 'seyfert/lib/common';
 import { createBrainrotCard } from '../../systems/canvas';
 import { Readable } from 'node:stream';

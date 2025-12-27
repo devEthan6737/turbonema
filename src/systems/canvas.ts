@@ -1,5 +1,5 @@
 import { createCanvas, loadImage } from "@napi-rs/canvas";
-import { rarities, RarityMap } from "./Database/interfaces";
+import { rarities, RarityMap } from "./db/interfaces";
 
 export async function createBrainrotCard(name: string, message: string, base64Image: Buffer, rarity: rarities, level: number) {
     const width = 450;
