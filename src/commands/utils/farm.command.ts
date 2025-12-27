@@ -1,9 +1,9 @@
 import { Declare, Command, type CommandContext, IgnoreCommand, Container, TextDisplay, Separator, MediaGallery, MediaGalleryItem, ActionRow, Button } from 'seyfert';
-import Database from '../../systems/db/database';
-import {  Brainrot, Profile, rarities, RarityMap } from '../../systems/db/interfaces';
+import Database from '../../systems/database/database';
+import {  Brainrot, Profile, rarities, RarityMap } from '../../systems/database/interfaces';
 import { ButtonStyle, MessageFlags } from 'seyfert/lib/types';
 import { ColorResolvable, Formatter, TimestampStyle } from 'seyfert/lib/common';
-import { createProfile } from '../../systems/db/createProfile';
+import { createProfile } from '../../systems/database/createProfile';
 import ms from 'ms';
 import { CollectorInteraction } from 'seyfert/lib/components/handler';
 import { addBrainrot } from '../../systems/containers';

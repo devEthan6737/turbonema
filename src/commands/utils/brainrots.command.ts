@@ -1,9 +1,9 @@
 import { Declare, Command, type CommandContext, IgnoreCommand, Embed, Button, ActionRow, AttachmentBuilder } from 'seyfert';
-import Database from '../../systems/db/database';
-import { Brainrot, Profile, rarities, RarityMap } from '../../systems/db/interfaces';
+import Database from '../../systems/database/database';
+import { Brainrot, Profile, rarities, RarityMap } from '../../systems/database/interfaces';
 import { ColorResolvable } from 'seyfert/lib/common';
 import { ButtonStyle } from 'seyfert/lib/types';
-import { createProfile } from '../../systems/db/createProfile';
+import { createProfile } from '../../systems/database/createProfile';
 import { CollectorInteraction } from 'seyfert/lib/components/handler';
 import { playLocalAudio } from '../../systems/playAudio';
 

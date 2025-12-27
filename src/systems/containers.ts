@@ -1,4 +1,4 @@
-import { Brainrot, BrainrotInventory } from "./db/interfaces";
+import { Brainrot, BrainrotInventory } from "./database/interfaces";
 
 export function addBrainrot(brainrot: Brainrot, inventory: BrainrotInventory[]): BrainrotInventory[] {
     const brainrotFound = inventory.find(br => br.id == brainrot.id);
