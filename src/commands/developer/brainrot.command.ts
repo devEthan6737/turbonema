@@ -1,5 +1,4 @@
 import { Declare, Options, Command, type CommandContext, IgnoreCommand, createStringOption, Middlewares, AttachmentBuilder, Embed, Button } from 'seyfert';
-import axios from 'axios';
 import { Brainrot, raritiesArray } from '../../systems/Database/interfaces';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -7,6 +6,8 @@ import Database from '../../systems/Database/database';
 import { Paginator } from '../..//systems/messages_utils/Paginator';
 import { ColorResolvable } from 'seyfert/lib/common';
 import { createBrainrotCard } from '../../systems/canvas';
+import { Readable } from 'node:stream';
+import { ReadableStream } from 'node:stream/web';
 
 const options = {
     action: createStringOption({
@@ -125,8 +126,10 @@ export default class BrainrotCommand extends Command {
                         const attachment = arg.attachments[0];
                         if (!attachment) return arg.write({ content: 'Adjunta una imagen' });
 
-                        const response = await axios.get(attachment.url, { responseType: 'arraybuffer' });
-                        brainrot.base64Image = Buffer.from(response.data, 'binary').toString('base64');
+                        const response = await fetch(attachment.url);
+                        const arrayBuffer = await response.arrayBuffer();
+                        
+                        brainrot.base64Image = Buffer.from(arrayBuffer).toString('base64');
 
                         const cardBuffer = await createBrainrotCard(
                             brainrot.name,
@@ -183,14 +186,17 @@ export default class BrainrotCommand extends Command {
 
                             if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
 
-                            const response = await axios.get(attachment.url, { responseType: 'stream' });
+                            const response = await fetch(attachment.url);
                             const writer = fs.createWriteStream(filePath);
-                            response.data.pipe(writer);
 
-                            await new Promise((resolve, reject) => {
+                           const readable = Readable.fromWeb(response.body as ReadableStream)
+
+                           readable.pipe(writer);
+                           
+                           await new Promise((resolve, reject) => {
                                 writer.on('finish', resolve);
                                 writer.on('error', reject);
-                            });
+                           });
 
                             brainrot.audioFileName = fileName;
 
