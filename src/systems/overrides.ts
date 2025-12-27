@@ -1,0 +1,34 @@
+import { type AnyContext, Embed, type Message, type WebhookMessage } from "seyfert";
+import { MessageFlags } from "seyfert/lib/types/index.js";
+
+export async function onOptionsError(ctx: AnyContext): Promise<Message | WebhookMessage | void> {
+    if (!ctx.isChat()) return;
+
+    const command = ctx.command.toJSON();
+
+    let usage = `s.${command.name}`;
+
+    if (command.options && command.options.length > 0) {
+        for (const opt of command.options) {
+            let optionStr = opt.required? `<-${opt.name}>` : `[-${opt.name}]`;
+
+            const option: any = opt;
+            if (option.choices && option.choices.length > 0) {
+                const choices = option.choices.map((c: any) => c.name).join(", ");
+                optionStr += ` <${choices}>`;
+            }
+
+            usage += ` ${optionStr}`;
+        }
+    }
+
+    const embed = new Embed()
+        .setColor("Red")
+        .setDescription(
+            `Has usado el comando de forma incorrecta.\n\n` +
+            `**Uso correcto:**\n\`${usage}\``
+        )
+        .setTimestamp();
+
+    return ctx.editOrReply({ flags: MessageFlags.Ephemeral, embeds: [ embed ] });
+}
