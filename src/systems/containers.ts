@@ -1,14 +1,22 @@
 import { Brainrot, BrainrotInventory } from "./Database/interfaces";
 
-export function addBrainrot(brainrot: Brainrot, inventory: BrainrotInventory[]): BrainrotInventory[] {
-    const brainrotFound = inventory.find(br => br.id == brainrot.id);
+export function addBrainrot (brainrotId: Brainrot['id'], inventory: BrainrotInventory[]): BrainrotInventory[] {
+    const index = inventory.findIndex(item => item.id === brainrotId);
 
-    if (brainrotFound) {
-        brainrotFound.amount++;
+    if (index === -1) return [...inventory, { id: brainrotId, amount: 1, protectedUntil: undefined }];
 
-        inventory = inventory.filter(br => br.id != brainrot.id);
-        inventory.push(brainrotFound);
-    } else inventory.push({ id: brainrot.id, amount: 1 });
+    return inventory.map((item, i) => i === index? { ...item, amount: item.amount + 1 } : item);
+}
 
-    return inventory;
+export function removeBrainrot (brainrotId: Brainrot['id'], inventory: BrainrotInventory[]): BrainrotInventory[] {
+    return inventory.flatMap(item => {
+        if (item.id !== brainrotId) return item;
+        if (item.amount > 1) return { ...item, amount: item.amount - 1 };
+
+        return [];
+  });
+}
+
+export function findBrainrot (brainrotId: Brainrot['id'], inventory: BrainrotInventory[]): BrainrotInventory | undefined {
+    return inventory.find(brainrot => brainrot.id == brainrotId);
 }

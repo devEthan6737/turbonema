@@ -8,7 +8,7 @@ export default createEvent({
         if (!(guild instanceof Guild)) return
 
 
-        client.messages.write('1453029212813529220', {
+        client.messages.write('1456002904329683017', {
             components: [
                 new Container().addComponents(
                     new TextDisplay().setContent(`## Expulsado de ${guild.name} (${guild.id})`),

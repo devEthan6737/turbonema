@@ -9,7 +9,7 @@ import Database from '../../systems/Database/database';
 
 export default class PingCommand extends Command {
     async run(ctx: CommandContext) {
-        const profiles = await Database.getInstance('profiles');
+        const profiles = Database.getInstance('profiles');
         const dbPing = Math.abs(Date.now() - (await profiles.get(ctx.author.id), Date.now()));
         const wsPing = Math.floor(ctx.client.gateway.latency);
         const clientPing = Math.floor(Date.now() - (ctx.message ?? ctx.interaction)!.createdTimestamp);

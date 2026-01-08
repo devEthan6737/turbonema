@@ -1,12 +1,13 @@
 import { Declare, Options, Command, type CommandContext, IgnoreCommand, createStringOption, Middlewares, AttachmentBuilder, Embed, Button } from 'seyfert';
 import axios from 'axios';
-import { Brainrot, raritiesArray } from '../../systems/Database/interfaces';
+import { Brainrot, Profile, raritiesArray } from '../../systems/Database/interfaces';
 import path from 'node:path';
 import fs from 'node:fs';
 import Database from '../../systems/Database/database';
-import { Paginator } from '../..//systems/messages_utils/Paginator';
+import { Paginator } from '../../systems/messages_utils/Paginator';
 import { ColorResolvable } from 'seyfert/lib/common';
 import { createBrainrotCard } from '../../systems/canvas';
+import { addBrainrot } from '../../systems/containers';
 
 const options = {
     action: createStringOption({
@@ -19,9 +20,19 @@ const options = {
             {
                 name: 'list',
                 value: 'list'
+            },
+            {
+                name: 'give',
+                value: 'give'
             }
         ],
         required: true
+    }),
+    userId: createStringOption({
+        description: 'La ID del usuario al que gestionar',
+    }),
+    brainrotId: createStringOption({
+        description: 'La ID del Brainrot a agregar'
     })
 } as const;
 
@@ -37,6 +48,7 @@ const options = {
 
 export default class BrainrotCommand extends Command {
     async run(ctx: CommandContext<typeof options>) {
+
         if (ctx.options.action === 'add') {
 
             const brainrot: any = {}
@@ -138,7 +150,6 @@ export default class BrainrotCommand extends Command {
                         brainrot.base64Image = cardBuffer;
                         step++;
 
-
                         message.edit({
                             content: `**BrainrotId:** ${brainrot.id}\n**Nombre:** ${brainrot.name}\n**Mensaje:** ${brainrot.message}\n**Nivel requerido:** ${brainrot.levelRequeried}\n**Rareza:** ${brainrot.rarity}\n**Imagen:** Buffer`,
                             files: [ new AttachmentBuilder().setName('card.png').setFile('buffer', brainrot.base64Image) ]
@@ -206,6 +217,7 @@ export default class BrainrotCommand extends Command {
                     }
                 }
             });
+
         } else if (ctx.options.action === 'list') {
             const brainrots = Database.getInstance('brainrots');
             const allBrainrots = await brainrots.all();
@@ -218,7 +230,7 @@ export default class BrainrotCommand extends Command {
                     return currentItems.map((brainrot: Brainrot, index) => {
                         const itemNumber = start + index + 1;
                         const padding = ' '.repeat(3 - String(itemNumber).length);
-                        return `\`${padding}${itemNumber}\` **${brainrot.name}**. Nivel **${brainrot.levelRequeried}** - ${brainrot.rarity}`;
+                        return `\`${padding}${itemNumber}\` **${brainrot.name}**. Nivel **${brainrot.levelRequeried}** - ${brainrot.rarity}\n- **ID: \`${brainrot.id}\`**\n`;
                     }).join('\n');
                 },
                 embedGenerator: (currentPage: number, totalPages: number): Embed => {
@@ -237,6 +249,19 @@ export default class BrainrotCommand extends Command {
             });
 
             await paginator.start();
+
+        } else if (ctx.options.action === 'give') {
+            if (!ctx.options.userId || !ctx.options.brainrotId) return ctx.write({ content: 'Faltan opciones.' });
+            const profiles = Database.getInstance('profiles');
+            const profile: Profile = await profiles.get(ctx.options.userId);
+
+            profile.brainrots = addBrainrot(ctx.options.brainrotId, profile.brainrots);
+
+            await profiles.set(profile.id, profile);
+
+            await ctx.write({
+                content: `El usuario <@${ctx.options.userId}> ha recibido el brainrot **${ctx.options.brainrotId}**`
+            });
         }
     }
 }

@@ -1,12 +1,14 @@
-import { CommandContext } from "seyfert";
+import { AutocompleteInteraction, CommandContext, Interaction } from "seyfert";
 import { Profile } from "./interfaces";
 import Database from "./database";
 import ms from "ms";
+import { CollectorInteraction } from "seyfert/lib/components/handler";
 
-export async function createProfile(ctx: CommandContext): Promise<Profile> {
+export async function createProfile(ctx: CommandContext | AutocompleteInteraction | Interaction | CollectorInteraction ): Promise<Profile> {
+    const userId = 'author' in ctx? ctx.author.id : ctx.user.id;
     const profiles = Database.getInstance('profiles');
     const profile: Profile = {
-        id: ctx.author.id,
+        id: userId,
         brainrots: [],
         level: {
             level: 1,
@@ -14,14 +16,19 @@ export async function createProfile(ctx: CommandContext): Promise<Profile> {
             max: 100
         },
         money: 0,
+        credits: 0,
         farm: {
             available: 20,
             used: 0,
             restart: Date.now() + ms('30m')
-        }
+        },
+        nextSteal: undefined,
+        createdAt: Date.now(),
+        onSale: [],
+        decks: []
     };
 
-    await profiles.set(ctx.author.id, profile);
+    await profiles.set(userId, profile);
 
     return profile;
 }

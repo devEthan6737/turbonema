@@ -47,6 +47,19 @@ export const RarityMap: Record<rarities, { translation: string, emoji: string }>
     }
 } as const;
 
+export const rarityColors: Record<string, string> = {
+    'very_common': '#7f8c8d',
+    'common': '#95a5a6',
+    'uncommon': '#2ecc71',
+    'rare': '#3498db',
+    'epic': '#9b59b6',
+    'legendary': '#f1c40f',
+    'mythical': '#e67e22',
+    'exotic': '#1abc9c',
+    'ungenerable': '#34495e',
+    'cursed': '#e74c3c'
+} as const;
+
 export const rarityOrder: Record<rarities, number> = {
     very_common: 0,
     common: 1,
@@ -73,15 +86,35 @@ export interface Brainrot {
     levelRequeried: number;
 }
 
+export interface Deck {
+    id: string;
+    name: string;
+    cardIds: Brainrot['id'][];
+    rarity: Brainrot['rarity'];
+    reward: {
+        money?: Profile['money'];
+        credits?: Profile['credits'];
+        exclusiveCardId?: Brainrot['id'];
+        xp?: Profile['level']['xp'];
+    };
+}
+
 export interface BrainrotInventory {
     id: Brainrot['id'];
     amount: number;
+    protectedUntil: number | undefined;
 }
 
 interface FarmConfig {
     available: number;
     used: number;
-    restart: number;
+    restart: number; // date
+}
+
+interface DeckInventory {
+    id: Deck['id'],
+    collectedCards: Brainrot['id'][],
+    claimed?: boolean
 }
 
 export interface Profile {
@@ -89,5 +122,17 @@ export interface Profile {
     brainrots: BrainrotInventory[];
     level: Level;
     money: number;
+    credits: number;
     farm: FarmConfig;
+    nextSteal: number | undefined;
+    createdAt: number;
+    onSale: Brainrot['id'][];
+    decks: DeckInventory[];
+}
+
+export interface Shop {
+    authorId: Profile['id'],
+    brainrotId: Brainrot['id'],
+    postDate: number, // date
+    price: number
 }

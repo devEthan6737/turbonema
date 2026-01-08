@@ -12,7 +12,8 @@ export default config.bot({
         GatewayIntentBits.GuildIntegrations,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildMessages
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildVoiceStates
     ],
     locations: {
         base,

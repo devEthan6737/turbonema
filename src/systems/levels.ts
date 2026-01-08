@@ -12,7 +12,7 @@ export interface FormattedLevel {
 }
 
 export function getNextLevelXP(level: Level['level']) {
-    return level * (13 * (level + 1.5));
+    return level * ((level >= 80? 45 : 17) * (level + 1.5));
 }
 
 export function isLevelPassed(level: Level): boolean {
