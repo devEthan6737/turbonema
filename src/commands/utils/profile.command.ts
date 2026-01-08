@@ -7,7 +7,7 @@ import { ButtonStyle, MessageFlags } from 'seyfert/lib/types';
 import { ColorResolvable } from 'seyfert/lib/common';
 import { createProfile } from '../../systems/Database/createProfile';
 import { CollectorInteraction } from 'seyfert/lib/components/handler';
-import { Paginator } from '../../systems/messages_utils/Paginator';
+import { Paginator } from '../../systems/messages/Paginator';
 
 @Declare({
     name: "profile",

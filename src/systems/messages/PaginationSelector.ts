@@ -1,12 +1,12 @@
-import { ActionRow, Button, Embed, Message, CommandContext } from 'seyfert';
+import { ActionRow, Button, Embed, Message, CommandContext, WebhookMessage } from 'seyfert';
 import { CollectorInteraction, CreateComponentCollectorResult } from 'seyfert/lib/components/handler';
 
-export interface PaginationSelectorOptions {
-    data: any[];
+export interface PaginationSelectorOptions<T = any> {
+    data: T[];
     itemsPerPage: number;
-    formatter: (items: any[], currentPage: number, selectedIndex: number) => string;
+    formatter: (items: T[], currentPage: number, selectedIndex: number) => string;
     embedGenerator: (currentPage: number, totalPages: number, totalItems: number, selectedIndex: number) => Embed;
-    filter?: (item: any) => boolean;
+    filter?: (item: T) => boolean;
     informationDescription: string,
     actionButtons: [
         Button | null,
@@ -16,24 +16,24 @@ export interface PaginationSelectorOptions {
     ];
 }
 
-export class PaginationSelector {
+export class PaginationSelector<T = any> {
     private readonly ctx: CommandContext | CollectorInteraction;
-    private readonly options: PaginationSelectorOptions;
-    private message: any = null;
-    private collector: CreateComponentCollectorResult | any;
+    private readonly options: PaginationSelectorOptions<T>;
+    private message: WebhookMessage | Message | null = null;
+    private collector!: CreateComponentCollectorResult;
     public currentPage: number = 0;
     public selectedIndex: number = -1;
     public totalPages: number;
-    public filteredData: any[];
+    public filteredData: T[];
 
-    constructor(ctx: CommandContext | CollectorInteraction, options: PaginationSelectorOptions) {
+    constructor(ctx: CommandContext | CollectorInteraction, options: PaginationSelectorOptions<T>) {
         this.ctx = ctx;
         this.options = options;
         this.filteredData = this.options.filter ? this.options.data.filter(this.options.filter) : this.options.data;
         this.totalPages = Math.ceil(this.filteredData.length / this.options.itemsPerPage);
     }
 
-    public async start(initializeMessage: boolean = false): Promise<{ message: Message, collector: any }> {
+    public async start(initializeMessage: boolean = false): Promise<{ message: Message | WebhookMessage, collector: CreateComponentCollectorResult }> {
         const initialContent = this.getCurrentPageContent();
         const initialEmbed = this.getEmbed(initialContent);
         const initialComponents = this.getComponents();
@@ -101,9 +101,9 @@ export class PaginationSelector {
         return [ row1, row2, row3 ];
     }
 
-    private setupCollector(): Promise<any> {
-        this.collector = this.message.createComponentCollector({
-            filter: (i: any) => i.user.id === this.ctx.member?.id,
+    private setupCollector(): CreateComponentCollectorResult {
+        this.collector = this.message!.createComponentCollector({
+            filter: (i) => i.user.id === this.ctx.member?.id,
             timeout: 180000
         });
 
@@ -170,7 +170,7 @@ export class PaginationSelector {
         this.selectedIndex = index;
     }
 
-    public getSelectedItem(): any {
+    public getSelectedItem(): T | null {
         if (this.selectedIndex >= 0 && this.selectedIndex < this.filteredData.length) {
             return this.filteredData[this.selectedIndex];
         }
@@ -201,7 +201,7 @@ export class PaginationSelector {
         });
     }
 
-    public refreshData(newData: any[]) {
+    public refreshData(newData: T[]) {
         this.filteredData = this.options.filter ? newData.filter(this.options.filter) : newData;
         this.totalPages = Math.ceil(this.filteredData.length / this.options.itemsPerPage);
         

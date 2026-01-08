@@ -47,7 +47,7 @@ export const RarityMap: Record<rarities, { translation: string, emoji: string }>
     }
 } as const;
 
-export const rarityColors: Record<string, string> = {
+export const rarityColors: Record<rarities, string> = {
     'very_common': '#7f8c8d',
     'common': '#95a5a6',
     'uncommon': '#2ecc71',

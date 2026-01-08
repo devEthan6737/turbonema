@@ -3,10 +3,10 @@
         - ether 19:32 28/12/2025
 */
 
-import { createCanvas, loadImage } from "canvas";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
 import { rarities, rarityColors, RarityMap } from "./Database/interfaces";
 
-export async function createBrainrotCard(name: string, message: string, base64Image: string, rarity: string, level: number) {
+export async function createBrainrotCard(name: string, message: string, base64Image: Buffer, rarity: rarities, level: number) {
     const width = 450;
     const height = 630;
     const canvas = createCanvas(width, height);
@@ -35,7 +35,7 @@ export async function createBrainrotCard(name: string, message: string, base64Im
         ctx.fillRect(0, 0, width, height);
     }
 
-    const img = await loadImage(`data:image/png;base64,${base64Image}`);
+    const img = await loadImage(base64Image);
 
     if (rarity === 'cursed') {
         ctx.globalAlpha = 0.5;
@@ -186,7 +186,7 @@ interface Card {
     img: string;
 }
 
-export async function generateDeckImage(collectedCards: Card[], cards: Card[], rarity: string) {
+export async function generateDeckImage(collectedCards: Card[], cards: Card[], rarity: rarities) {
     const allCards = [
         ...collectedCards.map(c => ({ ...c, owned: true })),
         ...cards.map(c => ({ ...c, owned: false }))
