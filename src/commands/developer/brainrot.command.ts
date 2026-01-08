@@ -3,7 +3,7 @@ import { Brainrot, Profile, rarities, raritiesArray } from '../../systems/Databa
 import path from 'node:path';
 import fs from 'node:fs';
 import Database from '../../systems/Database/database';
-import { Paginator } from '../../systems/messages_utils/Paginator';
+import { Paginator } from '../../systems/messages/Paginator';
 import { ColorResolvable } from 'seyfert/lib/common';
 import { createBrainrotCard } from '../../systems/canvas';
 import { addBrainrot } from '../../systems/containers';

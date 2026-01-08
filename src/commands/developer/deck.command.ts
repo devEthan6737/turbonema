@@ -1,7 +1,7 @@
 import { Declare, Options, Command, type CommandContext, IgnoreCommand, createStringOption, Middlewares, Embed, Button, AttachmentBuilder } from 'seyfert';
 import { Brainrot, Deck, raritiesArray } from '../../systems/Database/interfaces';
 import Database from '../../systems/Database/database';
-import { Paginator } from '../../systems/messages_utils/Paginator';
+import { Paginator } from '../../systems/messages/Paginator';
 import { ColorResolvable } from 'seyfert/lib/common';
 import { generateDeckImage } from '../../systems/canvas';
 
