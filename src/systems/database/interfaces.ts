@@ -136,3 +136,18 @@ export interface Shop {
     postDate: number, // date
     price: number
 }
+
+export interface Guild {
+    id: string;
+    turboñema: {
+        enabled: boolean;
+        integrationType: 'channel' | 'category' | 'global'
+        channelId: string | undefined;
+        messageLimit: number;
+        train: {
+            min: number;
+            max: number;
+            enabled: boolean;
+        }
+    }
+}

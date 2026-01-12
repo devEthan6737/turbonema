@@ -64,7 +64,7 @@ export default class FarmCommand extends Command {
         const message = await ctx.write({
             files: [
                 {
-                    filename: fileName, 
+                    filename: fileName,
                     data: imageBuffer
                 }
             ],
