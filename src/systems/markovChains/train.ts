@@ -1,8 +1,7 @@
-import { loadChain } from './load';
-import { writeChain } from './write';
+import { loadChain, writeChain } from './manager';
 
-export const train = (text: string) => {
-    const data = loadChain();
+export const train = async (guildId: string, text: string) => {
+    const data = await loadChain(guildId);
     const words = text.toLowerCase().split(/\s+/);
 
     for (let i = 0; i < words.length - 1; i++) {
@@ -13,5 +12,5 @@ export const train = (text: string) => {
         data[current][next] = (data[current][next] || 0) + 1;
     }
 
-    writeChain(data);
+    writeChain(guildId, data);
 };

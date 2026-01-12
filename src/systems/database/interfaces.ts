@@ -141,7 +141,8 @@ export interface Guild {
     id: string;
     turboñema: {
         enabled: boolean;
-        integrationType: 'channel' | 'category' | 'global'
+        integrationType: 'channel' | 'category' | 'global';
+        replyChance: 'ocassionally' | 'frequently' | 'always';
         channelId: string | undefined;
         messageLimit: number;
         train: {

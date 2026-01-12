@@ -1,7 +1,7 @@
-import { loadChain } from "./load";
+import { loadChain } from "./manager";
 
-export const generate = (startWord: string, limit: number = 10): string => {
-    const data = loadChain();
+export const generate = async (guildId: string, startWord: string, limit: number = 10): Promise<string> => {
+    const data = await loadChain(guildId);
     let current = startWord.toLowerCase();
     let result = [current];
 
