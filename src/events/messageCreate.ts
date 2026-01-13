@@ -3,7 +3,7 @@ import Database from "../systems/Database/database";
 import MegadbAdapter from '../systems/Database/megadb_adapter';
 import { Guild } from "../systems/Database/interfaces";
 import { train } from "../systems/markovChains/train";
-import { generate } from "src/systems/markovChains/generate";
+import { generate } from "../systems/markovChains/generate";
 
 export default createEvent({
     data: { name: 'messageCreate' },
@@ -44,7 +44,7 @@ export default createEvent({
                     });
 
                     ctx.write({
-                        content: await generate(guildId, ctx.content, guild.turboñema.messageLimit)
+                        content: await generate(guildId, ctx.content.split(' ')[0], guild.turboñema.messageLimit)
                     });
                 }
             }
