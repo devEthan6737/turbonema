@@ -1,6 +1,7 @@
 import { Declare, Options, Middlewares, Command, type CommandContext, IgnoreCommand, createBooleanOption, createIntegerOption } from 'seyfert';
 import Database from '../../systems/Database/database';
 import { Guild } from '../../systems/Database/interfaces';
+import MegadbAdapter from '../../systems/Database/megadb_adapter';
 
 const options = {
     enable: createBooleanOption({
@@ -13,6 +14,10 @@ const options = {
     }),
     min: createIntegerOption({
         description: 'Número mínimo de entrenamientos',
+        required: true
+    }),
+    reset: createBooleanOption({
+        description: 'Reiniciar cadenas de entrenamiento',
         required: true
     })
 } as const;
@@ -57,8 +62,13 @@ export default class TrainCommand extends Command {
         guild.turboñema.train.min = ctx.options.min;
         await guilds.set(ctx.guildId ?? '', guild);
 
-        ctx.write({
-            content: `\`\`\`json\n${JSON.stringify(guild, null, 2)}\`\`\``
-        });
+        if (ctx.options.reset) {
+            const chains = MegadbAdapter.getInstance(ctx.guildId ?? '');
+            const chainsLenght = chains.has(ctx.guildId ?? '') ? Object.keys(chains.get(ctx.guildId ?? '')).length : 0;
+
+            chains.delete(ctx.guildId ?? '');
+
+            ctx.write({ content: `**CHAINS RESET**\nSe han eliminado ${chainsLenght} cadenas de entrenamiento.\n\n\`\`\`json\n${JSON.stringify(guild, null, 2)}\`\`\`` });
+        } else ctx.write({ content: `\`\`\`json\n${JSON.stringify(guild, null, 2)}\`\`\`` });
     }
 }

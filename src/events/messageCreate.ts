@@ -18,10 +18,13 @@ export default createEvent({
         const chains = MegadbAdapter.getInstance(guildId);
         const chainsLenght = chains.has(guildId) ? Object.keys(chains.get(guildId)).length : 0;
 
-
-        if (guild.turboñema.train.enabled) {
-            if (chainsLenght >= guild.turboñema.train.max) return;
-
+        if (
+            guild.turboñema.train.enabled &&
+            chainsLenght <= guild.turboñema.train.max &&
+            ctx.content.split(' ').length <= 30 &&
+            !ctx.content.includes('@everyone') &&
+            !ctx.content.includes('@here')
+        ) {
             train(guildId, ctx.content);
         }
 
