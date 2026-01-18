@@ -6,7 +6,8 @@ import { train, trainGIF } from "../systems/markovChains/train";
 import { generate, getRandomStartToken, pickBestSeed, seedHasData } from "../systems/markovChains/generate";
 
 const DISCORD_EMOJI_REGEX = /<a?:\w+:\d+>/g;
-const GIF_REGEX = /(https?:\/\/\S+\.(gif|webp)|tenor\.com\/view\/\S+)/gi;
+const GIF_REGEX = /https?:\/\/(?:www\.)?(?:tenor\.com\/view\/\S+|media\.tenor\.com\/\S+\.(?:gif|webp))/gi;
+
 
 const extractEmojis = (text: string): string[] => {
     const unicode = text.match(/\p{Extended_Pictographic}/gu) ?? [];
@@ -22,13 +23,14 @@ const isEmojiOnly = (text: string): boolean => {
 };
 
 const containsGIF = (text: string): boolean => {
-    return GIF_REGEX.test(text);
+    return text.match(GIF_REGEX) !== null;
 }
 
 const getFirstGif = (text: string): string | null => {
-    const match = text.match(GIF_REGEX);
-    return match ? match[0] : null;
-}
+    const matches = text.match(GIF_REGEX);
+    return matches?.[0] ?? null;
+};
+
 
 export default createEvent({
     data: { name: 'messageCreate' },
@@ -60,9 +62,13 @@ export default createEvent({
                 train(emojiChainId, emojis.join(' '));
             } else {
                 if (hasGif && gif) {
-                    ctx.content = ctx.content.replace(gif, '');
-                    trainGIF(guildId, ctx.content, gif);
+                    const cleanText = ctx.content.replace(gif, '').trim();
+
+                    if (cleanText.length > 0) trainGIF(guildId, cleanText, gif);
+
+                    ctx.content = cleanText;
                 }
+
 
                 if (
                     ctx.content.split(' ').length > 1 &&
@@ -83,7 +89,7 @@ export default createEvent({
                 if (channel.is(['GuildText']) && channel.parentId === guild.turboñema.channelId) channelId = ctx.channelId;
             }
 
-            if (channelId === ctx.channelId || Math.random() < 0.02 || !ctx.mentions.users.some(u => u.id === ctx.client.botId) && ctx.referencedMessage?.author.id !== ctx.client.botId) {
+            if (channelId === ctx.channelId || Math.random() < 0.02 || ctx.mentions.users.some(u => u.id === ctx.client.botId) || ctx.referencedMessage?.author.id === ctx.client.botId) {
                 const chance = Math.floor(Math.random() * 101);
 
                 if ((guild.turboñema.replyChance === 'ocassionally' && chance >= 50) || (guild.turboñema.replyChance === 'frequently' && chance >= 70) || guild.turboñema.replyChance === 'always') {
@@ -124,7 +130,11 @@ export default createEvent({
                         content:
                             random > 68 && emojiData?
                                 `${response} ${getRandomStartToken(emojiData)}`
-                            : response
+                            : response,
+                        allowed_mentions: {
+                            parse: [ 'users' ],
+                            roles: []
+                        }
                     });
                 }
             }
