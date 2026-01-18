@@ -4,8 +4,7 @@ export interface ChainData {
     [key: string]: { [nextWord: string]: number };
 }
 
-
-export const loadChain = async (guildId: string): Promise<ChainData> => {
+export async function loadChain(guildId: string): Promise<ChainData> {
     const chains = Database.getInstance(guildId);
 
     if (!chains.has(guildId)) return {};

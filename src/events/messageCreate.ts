@@ -2,10 +2,11 @@ import { createEvent } from "seyfert";
 import Database from "../systems/Database/database";
 import MegadbAdapter from '../systems/Database/megadb_adapter';
 import { Guild } from "../systems/Database/interfaces";
-import { train } from "../systems/markovChains/train";
-import { generate, getRandomStartToken } from "../systems/markovChains/generate";
+import { train, trainGIF } from "../systems/markovChains/train";
+import { generate, getRandomStartToken, pickBestSeed, seedHasData } from "../systems/markovChains/generate";
 
 const DISCORD_EMOJI_REGEX = /<a?:\w+:\d+>/g;
+const GIF_REGEX = /(https?:\/\/\S+\.(gif|webp)|tenor\.com\/view\/\S+)/gi;
 
 const extractEmojis = (text: string): string[] => {
     const unicode = text.match(/\p{Extended_Pictographic}/gu) ?? [];
@@ -20,7 +21,14 @@ const isEmojiOnly = (text: string): boolean => {
         .trim().length === 0;
 };
 
+const containsGIF = (text: string): boolean => {
+    return GIF_REGEX.test(text);
+}
 
+const getFirstGif = (text: string): string | null => {
+    const match = text.match(GIF_REGEX);
+    return match ? match[0] : null;
+}
 
 export default createEvent({
     data: { name: 'messageCreate' },
@@ -39,6 +47,8 @@ export default createEvent({
 
         const emojis = extractEmojis(ctx.content);
         const emojiOnly = isEmojiOnly(ctx.content);
+        const gif = getFirstGif(ctx.content);
+        const hasGif = containsGIF(ctx.content);
 
         if (
             guild.turboñema.train.enabled &&
@@ -48,14 +58,20 @@ export default createEvent({
         ) {
             if (emojiOnly && emojis.length > 0) {
                 train(emojiChainId, emojis.join(' '));
-            } else if (
-                ctx.content.split(' ').length > 1 &&
-                ctx.content.split(' ').length <= 30
-            ) {
-                train(guildId, ctx.content);
+            } else {
+                if (hasGif && gif) {
+                    ctx.content = ctx.content.replace(gif, '');
+                    trainGIF(guildId, ctx.content, gif);
+                }
+
+                if (
+                    ctx.content.split(' ').length > 1 &&
+                    ctx.content.split(' ').length <= 30
+                ) {
+                    train(guildId, ctx.content);
+                }
             }
         }
-
 
         if (guild.turboñema.enabled) {
             let channelId = '';
@@ -67,7 +83,7 @@ export default createEvent({
                 if (channel.is(['GuildText']) && channel.parentId === guild.turboñema.channelId) channelId = ctx.channelId;
             }
 
-            if (channelId === ctx.channelId) {
+            if (channelId === ctx.channelId || Math.random() < 0.02 || !ctx.mentions.users.some(u => u.id === ctx.client.botId) && ctx.referencedMessage?.author.id !== ctx.client.botId) {
                 const chance = Math.floor(Math.random() * 101);
 
                 if ((guild.turboñema.replyChance === 'ocassionally' && chance >= 50) || (guild.turboñema.replyChance === 'frequently' && chance >= 70) || guild.turboñema.replyChance === 'always') {
@@ -84,10 +100,20 @@ export default createEvent({
                         : Math.floor(Math.random() * 3);
 
                     random = Math.floor(Math.random() * 101);
-                    const seed: string = random > 40? ctx.content.split(' ')[0] : getRandomStartToken(chains.get(guildId));
+                    // const seed: string = random > 40? ctx.content.split(' ')[0] : getRandomStartToken(chains.get(guildId));
+                    const seed: string = random > 40? await pickBestSeed(guildId, ctx.content.split(' ')) : getRandomStartToken(chains.get(guildId));
                     const emojiData = emojiChains.has(emojiChainId)? emojiChains.get(emojiChainId) : null;
 
                     random = Math.floor(Math.random() * 101);
+
+                    if (random < 2 && await seedHasData(`${guildId}:gifs`, seed)) {
+                        const gifResponse = await generate(`${guildId}:gifs`, seed, 1);
+
+                        random = Math.floor(Math.random() * 101);
+                        return ctx.write({
+                            content: random > 50 ? `${gifResponse} ${await generate(guildId, seed, limit)}` : gifResponse
+                        });
+                    }
 
                     if (random > 95 && emojiData) return ctx.react(getRandomStartToken(emojiData));
                     else if (random > 85 && emojiData) ctx.react(getRandomStartToken(emojiData));
