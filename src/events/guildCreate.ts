@@ -2,8 +2,8 @@ import { Container, createEvent, MediaGallery, MediaGalleryItem, Section, Separa
 import { MessageFlags } from 'seyfert/lib/types';
 import { addBrainrot } from '../systems/containers';
 import Database from '../systems/Database/database';
-import { Profile } from 'src/systems/Database/interfaces';
-import { createProfile } from 'src/systems/Database/createProfile';
+import { Profile } from '../systems/Database/interfaces';
+import { createProfile } from '../systems/Database/createProfile';
 
 export default createEvent({
     data: { name: 'guildCreate' },
