@@ -83,7 +83,7 @@ export default createEvent({
             const messages = MegadbAdapter.getInstance('messagesIA');
             if (!messages.has('msgs')) messages.set('msgs', []);
             const msgs = messages.get('msgs'); // entrenamiento de la ia
-            msgs['msgs'].push({
+            msgs.push({
                 user: ctx.content,
                 turboñema: await generate(guildId, await pickBestSeed(guildId, ctx.content.split(' ')))
             });
