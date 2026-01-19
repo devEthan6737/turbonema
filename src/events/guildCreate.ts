@@ -2,6 +2,8 @@ import { Container, createEvent, MediaGallery, MediaGalleryItem, Section, Separa
 import { MessageFlags } from 'seyfert/lib/types';
 import { addBrainrot } from '../systems/containers';
 import Database from '../systems/Database/database';
+import { Profile } from 'src/systems/Database/interfaces';
+import { createProfile } from 'src/systems/Database/createProfile';
 
 export default createEvent({
     data: { name: 'guildCreate' },
@@ -69,7 +71,12 @@ export default createEvent({
             flags: MessageFlags.IsComponentsV2
         }).then(async () => {
             const profiles = Database.getInstance('profiles');
-            const ownerProfile = await profiles.get(owner.id);
+            let ownerProfile: Profile;
+
+            if (!await profiles.has(owner.id)) {
+                ownerProfile = await createProfile(null, owner.id);
+                await profiles.set(owner.id, ownerProfile);
+            } else ownerProfile = await profiles.get(owner.id);
 
             ownerProfile.money += 800;
             ownerProfile.brainrots = addBrainrot(brainrot.id, ownerProfile.brainrots);

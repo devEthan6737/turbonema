@@ -142,7 +142,7 @@ export interface Guild {
     turboñema: {
         enabled: boolean;
         integrationType: 'channel' | 'category' | 'global';
-        replyChance: 'ocassionally' | 'frequently' | 'always';
+        replyChance: 'idleuser' | 'ocassionally' | 'frequently' | 'always';
         channelId: string | undefined;
         messageLimit: number;
         train: {

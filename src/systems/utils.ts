@@ -37,8 +37,8 @@ export function createProgressBar(endAt: number, startAt: number): { progress: n
     };
 }
 
-export function createNumericalProgressBar(mayorNumber: number, minorNumber: number): { progress: number, bar: string } {
-    const barLength = 40 - ((mayorNumber.toString().length + minorNumber.toString().length) / 2);
+export function createNumericalProgressBar(mayorNumber: number, minorNumber: number, barLength: number = 40): { progress: number, bar: string } {
+    barLength = barLength - ((mayorNumber.toString().length + minorNumber.toString().length) / 2);
     if (minorNumber >= mayorNumber) return { progress: 100, bar: '█'.repeat(barLength) };
 
     const progressPercentage = Math.min(100, (minorNumber / mayorNumber) * 100);

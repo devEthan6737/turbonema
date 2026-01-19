@@ -63,7 +63,7 @@ const options = {
 
 @Middlewares([ 'staff' ])
 
-export default class TurboñemaCommand extends Command {
+export default class TurboñemaCCommand extends Command {
     async run(ctx: CommandContext<typeof options>) {
         const guilds = Database.getInstance('guilds');
         

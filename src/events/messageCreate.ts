@@ -101,11 +101,7 @@ export default createEvent({
             if (channelId === ctx.channelId || ctx.mentions.users.some(u => u.id === ctx.client.botId) || ctx.referencedMessage?.author.id === ctx.client.botId) {
                 const chance = Math.floor(Math.random() * 101);
 
-                if ((guild.turboñema.replyChance === 'ocassionally' && chance >= 50) || (guild.turboñema.replyChance === 'frequently' && chance >= 70) || guild.turboñema.replyChance === 'always') {
-                    if (chainsLenght < guild.turboñema.train.min) return ctx.write({
-                        content: `\`TRAIN REMAINING: ${guild.turboñema.train.min - chainsLenght}\``
-                    });
-
+                if ((guild.turboñema.replyChance === 'idleuser' && chance >= 2) || (guild.turboñema.replyChance === 'ocassionally' && chance >= 96) || (guild.turboñema.replyChance === 'frequently' && chance >= 88) || guild.turboñema.replyChance === 'always') {
                     let random = Math.floor(Math.random() * 101);
                     const limit: number = 
                         random > 65?

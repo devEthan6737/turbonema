@@ -4,8 +4,9 @@ import Database from "./database";
 import ms from "ms";
 import { CollectorInteraction } from "seyfert/lib/components/handler";
 
-export async function createProfile(ctx: CommandContext | AutocompleteInteraction | Interaction | CollectorInteraction ): Promise<Profile> {
-    const userId = 'author' in ctx? ctx.author.id : ctx.user.id;
+export async function createProfile(ctx: CommandContext | AutocompleteInteraction | Interaction | CollectorInteraction | null, id?: string): Promise<Profile> {
+    const userId = id? id : ctx && 'author' in ctx? ctx.author.id : ctx && 'user' in ctx.user? ctx.user.id : '';
+
     const profiles = Database.getInstance('profiles');
     const profile: Profile = {
         id: userId,

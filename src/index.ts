@@ -1,7 +1,7 @@
 import { Client, ParseClient, ParseMiddlewares, UsingClient } from "seyfert";
 import { middlewares } from "./middlewares/middlewares";
 import "dotenv/config";
-import { onOptionsError } from "./systems/overrides";
+import { onOptionsError, onPermissionsFail } from "./systems/overrides";
 import ConfigInstance from "./systems/config";
 import { VoiceAdapter } from "./voice/adapter";
 
@@ -12,7 +12,8 @@ const client = new Client({
         },
         reply: () => true,
         defaults: {
-            onOptionsError
+            onOptionsError,
+            onPermissionsFail
         }
     }
 }) as UsingClient & Client;

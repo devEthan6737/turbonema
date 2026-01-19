@@ -1,4 +1,4 @@
-import { type AnyContext, Embed, type Message, type WebhookMessage } from "seyfert";
+import { type AnyContext, Embed, type Message, PermissionStrings, type WebhookMessage } from "seyfert";
 import { MessageFlags } from "seyfert/lib/types/index.js";
 
 export async function onOptionsError(ctx: AnyContext): Promise<Message | WebhookMessage | void> {
@@ -33,4 +33,8 @@ export async function onOptionsError(ctx: AnyContext): Promise<Message | Webhook
         .setTimestamp();
 
     return ctx.editOrReply({ flags: MessageFlags.Ephemeral, embeds: [embed] });
+}
+
+export async function onPermissionsFail(ctx: AnyContext, permissions: PermissionStrings): Promise<Message | WebhookMessage | void> {
+    return ctx.write({ content: `Requieres permisos: **\`${permissions.join(', ')}\`**` })
 }
