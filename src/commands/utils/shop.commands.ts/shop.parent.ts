@@ -10,4 +10,4 @@ import BuyShopCommand from "./buy.command";
 })
 
 @Options([ ListShopCommand, BuyShopCommand ])
-export default class WorkstationCommand extends Command {}
+export default class ShopCommand extends Command {}
