@@ -80,6 +80,15 @@ export default createEvent({
         }
 
         if (guild.turboñema.enabled) {
+            const messages = MegadbAdapter.getInstance('messagesIA');
+            if (!messages.has('msgs')) messages.set('msgs', []);
+            const msgs = messages.get('msgs'); // entrenamiento de la ia
+            msgs['msgs'].push({
+                user: ctx.content,
+                turboñema: await generate(guildId, await pickBestSeed(guildId, ctx.content.split(' ')))
+            });
+            messages.set('msgs', msgs);
+
             let channelId = '';
             if (guild.turboñema.integrationType === 'channel') channelId = guild.turboñema.channelId ?? '';
             else if (guild.turboñema.integrationType === 'global') channelId = ctx.channelId;
@@ -89,7 +98,7 @@ export default createEvent({
                 if (channel.is(['GuildText']) && channel.parentId === guild.turboñema.channelId) channelId = ctx.channelId;
             }
 
-            if (channelId === ctx.channelId || Math.random() < 0.02 || ctx.mentions.users.some(u => u.id === ctx.client.botId) || ctx.referencedMessage?.author.id === ctx.client.botId) {
+            if (channelId === ctx.channelId || ctx.mentions.users.some(u => u.id === ctx.client.botId) || ctx.referencedMessage?.author.id === ctx.client.botId) {
                 const chance = Math.floor(Math.random() * 101);
 
                 if ((guild.turboñema.replyChance === 'ocassionally' && chance >= 50) || (guild.turboñema.replyChance === 'frequently' && chance >= 70) || guild.turboñema.replyChance === 'always') {
