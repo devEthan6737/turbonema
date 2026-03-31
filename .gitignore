@@ -3,5 +3,4 @@ dist
 .env
 package-lock.json
 env_examples
-assets
 jsons

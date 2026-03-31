@@ -1,14 +1,14 @@
 import { Declare, SubCommand, type CommandContext, IgnoreCommand, Container, TextDisplay, Separator, Section, Button, ActionRow, Modal, Label, ModalSubmitInteraction, TextInput, MediaGallery, MediaGalleryItem } from 'seyfert';
 import { ColorResolvable } from 'seyfert/lib/common';
 import { ButtonStyle, MessageFlags, TextInputStyle } from 'seyfert/lib/types';
-import Database from '../../../systems/Database/database';
-import { Guild } from '../../../systems/Database/interfaces';
+import Database from '../../../systems/database/database';
+import { Guild } from '../../../systems/database/interfaces';
 import { createNumericalProgressBar } from '../../../systems/utils';
 import { MessageInstanceCallback } from '../../../systems/messages/MessageInstance';
 import { CollectorInteraction } from 'seyfert/lib/components/handler';
 import { Chart, registerables } from 'chart.js';
 import { createCanvas } from '@napi-rs/canvas';
-import MegaDB from '../../../systems/Database/megadb_adapter';
+import MegaDB from '../../../systems/database/megadb_adapter';
 
 Chart.register(...registerables);
 

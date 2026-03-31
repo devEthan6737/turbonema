@@ -1,8 +1,8 @@
 import { Declare, SubCommand, type CommandContext, IgnoreCommand, Container, TextDisplay, Separator, Section, Button, ActionRow, Modal, Label, StringSelectMenu, StringSelectOption, ModalSubmitInteraction, ChannelSelectMenu, TextInput } from 'seyfert';
 import { ColorResolvable } from 'seyfert/lib/common';
 import { ButtonStyle, ChannelType, MessageFlags, TextInputStyle } from 'seyfert/lib/types';
-import Database from '../../../systems/Database/database';
-import { Guild } from '../../../systems/Database/interfaces';
+import Database from '../../../systems/database/database';
+import { Guild } from '../../../systems/database/interfaces';
 import { createNumericalProgressBar } from '../../../systems/utils';
 import { MessageInstanceCallback } from '../../../systems/messages/MessageInstance';
 import { CollectorInteraction } from 'seyfert/lib/components/handler';

@@ -1,7 +1,7 @@
 import { createEvent } from "seyfert";
-import Database from "../systems/Database/database";
-import MegadbAdapter from '../systems/Database/megadb_adapter';
-import { Guild } from "../systems/Database/interfaces";
+import Database from "../systems/database/database";
+import MegadbAdapter from '../systems/database/megadb_adapter';
+import { Guild } from "../systems/database/interfaces";
 import { train, trainGIF } from "../systems/markovChains/train";
 import { generate, getRandomStartToken, pickBestSeed, seedHasData } from "../systems/markovChains/generate";
 

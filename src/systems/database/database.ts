@@ -17,7 +17,7 @@ class Database {
         this.initializeTable();
     }
 
-    public static getInstance(tableName: 'profiles' | 'brainrots' | 'shop' | 'decks' | 'guilds'): Database {
+    public static getInstance(tableName: 'guilds'): Database {
         if (!Database.instances.has(tableName)) {
             Database.instances.set(tableName, new Database(tableName));
         }

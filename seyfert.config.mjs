@@ -19,7 +19,6 @@ export default config.bot({
     locations: {
         base,
         commands: "commands",
-        events: "events",
-        components: "components"
+        events: "events"
     }
 });
