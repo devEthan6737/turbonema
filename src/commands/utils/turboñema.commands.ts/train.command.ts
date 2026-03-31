@@ -113,15 +113,15 @@ export default class AlgorithmTrainCommand extends SubCommand {
                     }
                 ],
                 components: [
-                    new Container().setColor((guild.turboñema.enabled? process.env.SUCCESS : process.env.DANGER) as ColorResolvable).addComponents(
+                    new Container().setColor((guild.turboñema.train.enabled? process.env.SUCCESS : process.env.DANGER) as ColorResolvable).addComponents(
                         new TextDisplay().setContent(`# Entrenamiento de T-V1`),
                         new Separator(),
                         new Section()
                             .setComponents(
-                                new TextDisplay().setContent(`**\`Entrenamiento ${guild.turboñema.enabled? 'ACTIVADO' : 'DESACTIVADO'}\`**`)
+                                new TextDisplay().setContent(`**\`Entrenamiento ${guild.turboñema.train.enabled? 'ACTIVADO' : 'DESACTIVADO'}\`**`)
                             )
                             .setAccessory(
-                                new Button().setCustomId('toggle').setLabel(guild.turboñema.enabled? 'Desactivar' : 'Activar').setStyle(guild.turboñema.enabled? ButtonStyle.Danger : ButtonStyle.Success)
+                                new Button().setCustomId('toggle').setLabel(guild.turboñema.train.enabled? 'Desactivar' : 'Activar').setStyle(guild.turboñema.train.enabled? ButtonStyle.Danger : ButtonStyle.Success)
                             ),
                         new Separator(),
                         new TextDisplay().setContent(
@@ -208,7 +208,7 @@ export default class AlgorithmTrainCommand extends SubCommand {
             );
         });
 
-        collector.run('max', async (interaction: CollectorInteraction) => {
+        collector.run('delete', async (interaction: CollectorInteraction) => {
             await interaction.deferUpdate();
 
             const textChains = MegaDB.getInstance(ctx.guildId ?? '');
