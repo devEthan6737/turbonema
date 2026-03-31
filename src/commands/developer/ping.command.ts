@@ -1,5 +1,5 @@
 import { Declare, Command, type CommandContext, IgnoreCommand } from 'seyfert';
-import Database from '../../systems/Database/database';
+import Database from '../../systems/database/database';
 
 @Declare({
     name: "ping",
@@ -9,8 +9,8 @@ import Database from '../../systems/Database/database';
 
 export default class PingCommand extends Command {
     async run(ctx: CommandContext) {
-        const profiles = Database.getInstance('profiles');
-        const dbPing = Math.abs(Date.now() - (await profiles.get(ctx.author.id), Date.now()));
+        const guilds = Database.getInstance('guilds');
+        const dbPing = Math.abs(Date.now() - (await guilds.get(ctx.guildId ?? ''), Date.now()));
         const wsPing = Math.floor(ctx.client.gateway.latency);
         const clientPing = Math.floor(Date.now() - (ctx.message ?? ctx.interaction)!.createdTimestamp);
         const shardPing = Math.floor((await ctx.client.gateway.get(ctx.shardId)?.ping()) ?? 0);

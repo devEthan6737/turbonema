@@ -1,5 +1,5 @@
 import { Declare, Options, Middlewares, Command, type CommandContext, IgnoreCommand, createStringOption } from 'seyfert';
-import MegadbAdapter from '../../systems/Database/megadb_adapter';
+import MegadbAdapter from '../../systems/database/megadb_adapter';
 
 const options = {
     action: createStringOption({

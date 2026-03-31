@@ -1,6 +1,6 @@
 import { Declare, Options, Middlewares, Command, type CommandContext, IgnoreCommand, createBooleanOption, createStringOption, createIntegerOption } from 'seyfert';
-import Database from '../../systems/Database/database';
-import { Guild } from '../../systems/Database/interfaces';
+import Database from '../../systems/database/database';
+import { Guild } from '../../systems/database/interfaces';
 
 const options = {
     enable: createBooleanOption({

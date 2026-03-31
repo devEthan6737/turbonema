@@ -1,4 +1,4 @@
-import Database from '../Database/megadb_adapter';
+import Database from '../database/megadb_adapter';
 
 export interface ChainData {
     [key: string]: { [nextWord: string]: number };
