@@ -7,10 +7,16 @@ export default createEvent({
         client.logger.info(`Bot Online (${user.username})`);
 
         client.gateway.setPresence({
-            status: PresenceUpdateStatus.Online,
+            // random between 0 and 3:
+            // dnd, idle or online
+            status: [
+                PresenceUpdateStatus.DoNotDisturb,
+                PresenceUpdateStatus.Idle,
+                PresenceUpdateStatus.Online
+            ][Math.floor(Math.random() * 2)],
             activities: [
                 {
-                    name: `${(await (client.guilds.list())).length} servidores ♥️`,
+                    name: `${(await (client.guilds.list())).length} servidores xd`,
                     type: ActivityType.Watching
                 }
             ],
